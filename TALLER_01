@@ -1,0 +1,108 @@
+
+/* BASE DE DATOS DIAGRAMA */
+mysql> CREATE TABLE `Order` (
+    -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
+  ->  order_date DATE
+);
+mysql> CREATE TABLE `Category` (
+   ->  id INT PRIMARY KEY AUTO INCREMENT NOT NUL,
+   -> name VARCHAR(255)
+);
+
+mysql> CREATE TABLE `Product` (
+   -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
+   -> name VARCHAR(255),
+   -> price FLOAT DEFAULT (0),
+   -> category_id INT,
+   -> FOREIGN KEY (category_id) REFERENCES Category(id)
+);
+mysql> CREATE TABLE `Order_line` (
+    -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
+    -> order_id INT,
+    -> product_id INT,
+    -> quantity INT,
+    -> FOREIGN KEY (order_id) REFERENCES `Order`(id),
+    -> FOREIGN KEY (product_id) REFERENCES Product(id)
+);
+mysql> CREATE TABLE `Furniture` (
+    ->product_id INT PRIMARY KEY AUTO INCREMENT NOT NUL,
+   ->manufacture_date DATE,
+   ->FOREIGN KEY (product_id) REFERENCES Product(id)
+);
+mysql> CREATE TABLE `Food` (
+    ->product_id INT PRIMARY KEY AUTO INCREMENT NOT NUL,
+    ->expiration_date DATE,
+    ->calories INT,
+    ->FOREIGN KEY (product_id) REFERENCES Product(id)
+);
+
+/* BASE DE DATOS VIDEOJUEGOS DDL*/
+
+mysql> CREATE DATABASE VideojuegosDB;
+USE VideojuegosDB;
+
+/* Tabla de Videojuegos */
+mysql> CREATE TABLE Videojuego (
+    ->id INT PRIMARY KEY AUTO_INCREMENT,
+    ->titulo VARCHAR(255) NOT NULL,
+    ->genero VARCHAR(100),
+    ->plataforma VARCHAR(100),
+    ->fecha_lanzamiento DATE,
+    ->precio DECIMAL(10, 2)
+);
+
+/*Tabla de Desarrolladores*/
+mysql> CREATE TABLE Desarrollador (
+    ->id INT PRIMARY KEY AUTO_INCREMENT,
+    ->nombre VARCHAR(255) NOT NULL,
+    ->pais VARCHAR(100)
+);
+
+/* Tabla de Relación entre Videojuegos y Desarrolladores */
+mysql> CREATE TABLE Videojuego_Desarrollador (
+    ->videojuego_id INT,
+    ->desarrollador_id INT,
+    ->PRIMARY KEY (videojuego_id, desarrollador_id),
+    ->FOREIGN KEY (videojuego_id) REFERENCES Videojuego(id),
+    ->FOREIGN KEY (desarrollador_id) REFERENCES Desarrollador(id)
+);
+
+/*DML*/
+/*Insertar datos en la tabla Videojuego*/
+->INSERT INTO Videojuego (titulo, genero, plataforma, fecha_lanzamiento, precio)
+->VALUES ('The Legend of Zelda', 'Aventura', 'Nintendo Switch', '2017-03-03', 59.99);
+
+->INSERT INTO Videojuego (titulo, genero, plataforma, fecha_lanzamiento, precio)
+->VALUES ('God of War', 'Acción', 'PlayStation 4', '2018-04-20', 49.99);
+
+/*Insertar datos en la tabla Desarrollador*/
+->INSERT INTO Desarrollador (nombre, pais)
+->VALUES ('Nintendo', 'Japón');
+
+->INSERT INTO Desarrollador (nombre, pais)
+->VALUES ('Santa Monica Studio', 'Estados Unidos');
+
+/*Insertar datos en la tabla Videojuego_Desarrollador*/
+->INSERT INTO Videojuego_Desarrollador (videojuego_id, desarrollador_id)
+->VALUES (1, 1);
+
+->INSERT INTO Videojuego_Desarrollador (videojuego_id, desarrollador_id)
+->VALUES (2, 2);
+
+/*Consultar todos los videojuegos*/
+->SELECT * FROM Videojuego;
+
+/*Consultar todos los desarrolladores*/
+->SELECT * FROM Desarrollador;
+
+/*Consultar videojuegos con sus desarrolladores*/
+->SELECT v.titulo, d.nombre
+->FROM Videojuego v
+->JOIN Videojuego_Desarrollador vd ON v.id = vd.videojuego_id
+->JOIN Desarrollador d ON d.id = vd.desarrollador_id;
+
+/*DIAGRAMA ENTIDAD RELACION*/
+/*ENTRAR AL LINK PARA VER EL DIAGRAMA*/
+https://drive.google.com/file/d/1UdpI4xeWFCPKZWTVpaXcveB72x7cr9sj/view?usp=sharing 
+
+
