@@ -1,5 +1,5 @@
 
-
+/*DIAGRAMA PRIMER PUNTO*/
 mysql> CREATE TABLE `Order` (
     -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
   ->  order_date DATE
