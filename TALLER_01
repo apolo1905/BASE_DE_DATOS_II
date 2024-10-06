@@ -1,8 +1,8 @@
 
 /*DIAGRAMA PRIMER PUNTO*/
-mysql> CREATE TABLE `Order` (
+mysql> CREATE TABLE `Orders` (
     -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
-  ->  order_date DATE
+  ->  orders_date DATE
 );
 mysql> CREATE TABLE `Category` (
    ->  id INT PRIMARY KEY AUTO INCREMENT NOT NUL,
@@ -18,10 +18,10 @@ mysql> CREATE TABLE `Product` (
 );
 mysql> CREATE TABLE `Order_line` (
     -> id INT PRIMARY KEY AUTO INCREMENT NOT NULL,
-    -> order_id INT,
+    -> orders_id INT,
     -> product_id INT,
     -> quantity INT,
-    -> FOREIGN KEY (order_id) REFERENCES `Order`(id),
+    -> FOREIGN KEY (orders_id) REFERENCES `Orders`(id),
     -> FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 mysql> CREATE TABLE `Furniture` (
