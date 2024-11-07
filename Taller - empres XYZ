@@ -1,0 +1,96 @@
+DIAGRAMA ENTIDAD RELACION 
+https://drive.google.com/file/d/1O2b1TgdGtWkRltGFtFJPOoYTBXXKHidi/view?usp=sharing 
+CREATE DATABASE EMPRESA_XYZ;
+USE EMPRESA_XYZ; 
+
+-- Tabla de Perfiles
+CREATE TABLE perfiles (
+    id INT PRIMARY KEY,
+    nombre VARCHAR(50),
+    fecha_vigencia DATE,
+    descripcion TEXT,
+    encargado VARCHAR(100)
+);
+
+-- Tabla de Usuarios
+CREATE TABLE usuarios (
+    id INT PRIMARY KEY,
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    estado VARCHAR(20),
+    contrasena VARCHAR(255),
+    cargo VARCHAR(50),
+    salario DECIMAL(10,2),
+    fecha_ingreso DATE,
+    perfil_id INT,
+    FOREIGN KEY (perfil_id) REFERENCES perfiles(id)
+);
+
+-- Tabla de Login
+CREATE TABLE login (
+    id INT PRIMARY KEY,
+    usuario_id INT,
+    fecha_hora DATETIME,
+    ip VARCHAR(15),
+    resultado VARCHAR(10),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+-- Tabla de Fidelización
+CREATE TABLE fidelizacion (
+    id INT PRIMARY KEY,
+    actividad VARCHAR(100),
+    fecha DATE,
+    puntos INT,
+    usuario_id INT,
+    perfil_id INT,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (perfil_id) REFERENCES perfiles(id)
+);
+
+-- Tabla de Actividades
+CREATE TABLE actividades (
+    id INT PRIMARY KEY,
+    descripcion TEXT,
+    fecha DATE,
+    puntos_asignados INT
+);
+
+Vistas y Procedimientos Almacenados
+Vista para calcular puntos acumulados por usuario en los últimos 12 meses:
+
+CREATE VIEW puntos_acumulados_usuario AS
+SELECT u.nombre, u.apellido, SUM(f.puntos) AS total_puntos
+FROM usuarios u
+JOIN fidelizacion f ON u.id = f.usuario_id
+WHERE f.fecha >= DATEADD(MONTH, -12, GETDATE())
+GROUP BY u.nombre, u.apellido;
+
+Procedimiento almacenado para registrar un login exitoso o fallido:
+
+CREATE PROCEDURE registrar_login (
+    @usuario_id INT,
+    @ip VARCHAR(15),
+    @resultado VARCHAR(10)
+)
+AS
+BEGIN
+    INSERT INTO login (usuario_id, fecha_hora, ip, resultado)
+    VALUES (@usuario_id, GETDATE(), @ip, @resultado);
+END;
+
+4. Inserción de Datos de Simulación
+Para cumplir con los registros solicitados:
+
+Inserta 20 usuarios distribuidos en distintos perfiles.
+Inserta 10 perfiles para los diferentes roles.
+Inserta 100 registros en la tabla de login para simular los accesos.
+Inserta registros en la tabla fidelización para las actividades de 12 meses.
+
+5. Lecciones Aprendidas
+Durante este proyecto, algunas de las lecciones clave fueron:
+
+Importancia del diseño E-R: Diseñar un diagrama E-R detallado es crucial, ya que permite entender las relaciones y dependencias antes de implementar las tablas.
+Normalización: Aplicar las reglas de normalización ayudó a reducir redundancias y mejorar la consistencia de los datos.
+Vistas y Procedimientos: Las vistas y procedimientos almacenados fueron útiles para simplificar consultas complejas y mantener seguridad en el acceso a los datos.
+Simulación de Escenarios: La simulación de actividades y accesos previos permitió validar la integridad del sistema antes de ponerlo en producción.
