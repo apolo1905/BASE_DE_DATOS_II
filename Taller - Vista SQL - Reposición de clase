@@ -1,0 +1,161 @@
+/*CREACION DE LA BASE DE DATOS*/
+CREATE DATABASE IF NOT EXISTS ProveedoresPartesTaller;
+USE ProveedoresPartesTaller;
+
+CREATE TABLE Proveedores (
+    Id CHAR(2) PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Status INT,
+    Ciudad VARCHAR(50)
+);
+
+CREATE TABLE Partes (
+    NumeroParte CHAR(2) PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Color VARCHAR(50),
+    Peso DECIMAL(5, 2),
+    Precio DECIMAL(10, 2),
+    Ciudad VARCHAR(50)
+);
+CREATE TABLE Taller (
+    IdMovimiento INT AUTO_INCREMENT PRIMARY KEY, -- Nuevo campo único
+    IdProveedor CHAR(2),
+    NumeroParte CHAR(2),
+    Cantidad INT,
+    FOREIGN KEY (IdProveedor) REFERENCES Proveedores(Id),
+    FOREIGN KEY (NumeroParte) REFERENCES Partes(NumeroParte)
+);
+INSERT INTO Proveedores VALUES 
+('V1', 'Smith', 20, 'Londres'),
+('V2', 'Jones', 10, 'París'),
+('V3', 'Blake', 30, 'París'),
+('V4', 'Clark', 20, 'Londres'),
+('V5', 'Adams', 30, 'Atenas');
+
+INSERT INTO Partes VALUES 
+('P1', 'Tuerca', 'Rojo', 12.0, 5.00, 'Londres'),
+('P2', 'Perno', 'Verde', 17.0, 10.00, 'París'),
+('P3', 'Tornillo', 'Azul', 17.0, 15.00, 'Roma'),
+('P4', 'Tornillo', 'Rojo', 14.0, 12.50, 'Londres'),
+('P5', 'Leva', 'Azul', 12.0, 8.00, 'París'),
+('P6', 'Engrane', 'Rojo', 19.0, 20.00, 'Londres');
+
+INSERT INTO Taller (IdProveedor, NumeroParte, Cantidad) VALUES 
+('V1', 'P1', 200),
+('V1', 'P1', 700),
+('V1', 'P2', 400),
+('V2', 'P3', 200),
+('V2', 'P3', 500),
+('V2', 'P3', 600),
+('V3', 'P4', 500),
+('V4', 'P6', 300),
+('V5', 'P5', 500),
+('V5', 'P6', 500);
+
+/*procedimiento almacenados con parametro de entrada*/
+DELIMITER //
+CREATE PROCEDURE ObtenerMovimientosPorProveedor(IN proveedorId CHAR(2))
+BEGIN
+    SELECT 
+        p.Nombre AS Proveedor,
+        pa.Nombre AS Parte,
+        t.Cantidad
+    FROM Taller t
+    INNER JOIN Proveedores p ON t.IdProveedor = p.Id
+    INNER JOIN Partes pa ON t.NumeroParte = pa.NumeroParte
+    WHERE t.IdProveedor = proveedorId;
+END //
+DELIMITER ;
+
+CALL ObtenerMovimientosPorProveedor('V1');
+CALL ObtenerMovimientosPorProveedor('V2');
+CALL ObtenerMovimientosPorProveedor('V3');
+CALL ObtenerMovimientosPorProveedor('V4');
+CALL ObtenerMovimientosPorProveedor('V5');
+
+/*sin parametro.*/
+DELIMITER //
+CREATE PROCEDURE ListarTodosMovimientos()
+BEGIN
+    SELECT 
+        p.Nombre AS Proveedor,
+        pa.Nombre AS Parte,
+        t.Cantidad
+    FROM Taller t
+    INNER JOIN Proveedores p ON t.IdProveedor = p.Id
+    INNER JOIN Partes pa ON t.NumeroParte = pa.NumeroParte;
+END //
+DELIMITER ;
+
+CALL ListarTodosMovimientos();
+
+/*REPORTES DE VISTAS*/
+/*Reporte 1: Movimientos por Proveedor*/
+
+CREATE VIEW MovimientosPorProveedor AS
+SELECT 
+    p.Nombre AS Proveedor,
+    pa.Nombre AS Parte,
+    t.Cantidad
+FROM Taller t
+INNER JOIN Proveedores p ON t.IdProveedor = p.Id
+INNER JOIN Partes pa ON t.NumeroParte = pa.NumeroParte;
+
+SELECT * FROM MovimientosPorProveedor;
+
+/*Reporte 2: Total de Partes por Proveedor*/
+
+CREATE VIEW TotalPartesPorProveedor AS
+SELECT 
+    p.Nombre AS Proveedor,
+    SUM(t.Cantidad) AS TotalPartes
+FROM Taller t
+INNER JOIN Proveedores p ON t.IdProveedor = p.Id
+GROUP BY p.Nombre;
+
+SELECT * FROM TotalPartesPorProveedor;
+
+/*Reporte 3: Detalle de Partes*/
+
+CREATE VIEW DetallePartes AS
+SELECT 
+    pa.Nombre AS Parte,
+    pa.Color,
+    pa.Peso,
+    pa.Precio,
+    pa.Ciudad
+FROM Partes pa;
+
+SELECT * FROM DetallePartes;
+
+/*Reporte 4: Proveedores y Sus Ciudades*/
+
+CREATE VIEW ProveedoresCiudades AS
+SELECT 
+    Nombre AS Proveedor,
+    Ciudad
+FROM Proveedores;
+SELECT * FROM ProveedoresCiudades;
+
+/*Reporte 5: Relación Completa*/
+
+CREATE VIEW RelacionCompleta AS
+SELECT 
+    p.Nombre AS Proveedor,
+    pa.Nombre AS Parte,
+    t.Cantidad,
+    pa.Precio,
+    (t.Cantidad * pa.Precio) AS TotalCosto
+FROM Taller t
+INNER JOIN Proveedores p ON t.IdProveedor = p.Id
+INNER JOIN Partes pa ON t.NumeroParte = pa.NumeroParte;
+
+SELECT * FROM RelacionCompleta;
+
+/*DOCUMENTOS DE LOS PROCESOS Y REPORTES*/
+https://drive.google.com/file/d/1RopnbCrTtG_Kr7wRWECpaKX7Dri-p-vf/view?usp=sharing 
+
+
+
+
+
